@@ -1,0 +1,81 @@
+when e_1 onIdle                      (e1_idle)
+     if isIdle & lastTalk > 10000
+     then res_e1_hi
+     store world.lastTalk = now
+
+when e_1 onReply                   (e1_replies)
+     if res_e2_hi & isIdle
+     then res_e1_yeah
+
+when e_1 onReply                 (e1_grumbles)
+     if res_e1_hi & num_ents = 2 & isIdle
+     then res_e1_grumbles
+
+when e_1 onReply (e1_nopes)
+     if res_e2_did_you_say & isIdle
+     then res_e1_nopes
+
+when e_1 onReply                 (dunno_what)
+     if res_e2_wow
+     then res_e1_was_what
+
+when e_1 onReply              (seeing_thigns)
+     if res_e2_wow3
+     then res_e1_seeing_things
+
+;-------------------------------------------
+
+when e_2 onReply                   (e2_rep_hi)
+     if res_e1_hi & num_ents = 2 & isIdle
+     then res_e2_hi
+
+when e_2 onReply               (e2_didnt_hear)
+     if res_e1_grumbles & isIdle
+     then res_e2_did_you_say
+
+when e_2 onReply                   (e2_snark)
+     if res_e1_hi & num_ents > 2 & isIdle
+     then res_e2_shutup
+
+when e_2 onAppear               (e2_appear_1)
+     if saidWow = 0
+     then res_e2_wow
+     store saidWow = 1
+
+when e_2 onReply               (e2_shrug_what)
+     if res_e1_was_what
+     then res_e2_shrugs
+
+when e_2 onAppear               (e2_appear_2)
+     if saidWow = 1
+     then res_e2_wow2
+     store saidWow = 2
+
+when e_2 onAppear               (e2_appear_3)
+     if saidWow = 2
+     then res_e2_wow3
+     store saidWow = 0
+
+;---------- heard lines handlers -----------
+
+when e_2 onReply                   (e2_heard_hi)
+     if res_e1_hi & from e_1
+     store heardE1Lines + 1
+
+when e_2 onReply               (e2_enough_his)
+     if from e_1 & heardE1Lines = 2 & isIdle
+     then res_e2_chatty
+
+when e_2 onReply               (e2_too_chatty)
+     if from e_1 & heardE1Lines = 4 & isIdle
+     then res_e2_chatty_more
+
+when e_2 onReply                 (e2_max_chat)
+     if from e_1 & heardE1Lines > 5
+     store heardE1Lines = 0
+     
+; ------------------ e3 -------------------
+
+when e_3 onReply                 (e3_lols)
+     if res_e2_shutup & num_ents > 2 & isIdle = 1
+     then res_e3_lol
